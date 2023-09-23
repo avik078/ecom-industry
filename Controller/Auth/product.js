@@ -41,11 +41,7 @@ const productGet = async (req, res) => {
 ///////////////////////////////////////////// GET JOINED COLLECTION DATA
 const joinedDataGet = async (req, res) => {
   await Product.aggregate([
-    {
-      $match: {
-        __v: 0,
-      },
-    },
+   
     {
       $lookup: {
         from: "expense_1",
@@ -55,6 +51,7 @@ const joinedDataGet = async (req, res) => {
         pipeline: [
           {
             $project: {
+              createdBy:1 ,
               name: 1,
               category: 1
             }
@@ -65,6 +62,11 @@ const joinedDataGet = async (req, res) => {
     {
       $unwind : "$customerData"
     } ,
+    {
+      $addFields:{
+        cusName:"$customerData.createdBy"
+      }
+    },
     {
       $project: {
         __v: 0
@@ -88,6 +90,62 @@ const joinedDataGet = async (req, res) => {
         });
     });
 };
+/////////////////////////////////////////////////// GROUP Data 
+const  groupProduct  = async (req,res) => {
+  await Product.aggregate([
+   
+    {
+      $lookup: {
+        from: "expense_1",
+        localField: 'customerId',
+        foreignField: "_id",
+        as:"customerData",
+        // pipeline: [
+        //   {
+        //     $project: {
+        //       createdBy:1 ,
+        //       name: 1,
+        //       category: 1
+        //     }
+        //   }
+        // ]  // meaning less only those field will return which are mentioned in grouping 
+      },
+    },
+    {
+      $unwind :  "$customerData"
+    } ,
+    {
+      $addFields:{
+        cusName:"$customerData.createdBy"
+      }
+    },
+    {$group : { _id:"$name" , customerArr : {$push : "$cusName"} }} ,
+   
+    {
+      $project: {
+        __v: 0
+      }
+    },
+  ])
+    .then((data) => {
+      res.status(200).json({
+        status: true,
+        msg: "Data get successfully !",
+        data: data,
+      });
+    })
+    .catch((error) => {
+      res
+        .status(500)
+        .json({
+          status: false,
+          msg: "server error ! Please try again !!",
+          error: "server error !Please try again !!",
+        });
+    });
+}
+///////////////
+// {$group : { _id:"$name" , customerArr : {$push : "$cusName"} }} ,
 
 //////////////////////////////////////////////// POST
 const productPost = async (req, res) => {
@@ -115,5 +173,6 @@ module.exports = {
   productGetHome,
   productGet,
   joinedDataGet,
+  groupProduct ,
   productPost,
 };
