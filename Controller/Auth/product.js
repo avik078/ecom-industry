@@ -119,8 +119,7 @@ const  groupProduct  = async (req,res) => {
         cusName:"$customerData.createdBy"
       }
     },
-    {$group : { _id:"$name" , customerArr : {$push : "$cusName"} }} ,
-   
+    {$group : { _id:"$name" , customerArr : {$push : "$cusName"} }},   
     {
       $project: {
         __v: 0
@@ -144,7 +143,72 @@ const  groupProduct  = async (req,res) => {
         });
     });
 }
-///////////////
+/////////////////////////////////////////////////////////////////GET rich user
+const  avgCusExp = async(req,res) => {
+   await Product.aggregate([ 
+     {
+      $lookup : {
+      from: "expense_1",
+      localField: 'customerId',
+      foreignField: "_id",
+      as:"customerData",
+      pipeline: [
+        {
+              $project: {
+                amount:1 ,
+                _id:0
+              }
+            }
+      ]
+     } 
+    },
+    {
+      $unwind: "$customerData"
+    } ,
+    {
+      $addFields:{
+      cusAmt:"$customerData.amount" ,
+
+      }
+    } ,
+    {
+      $addFields:{
+        cusAmt: { $toInt: "$cusAmt" }
+      }
+  } , 
+    {
+      $group: {
+            _id:"$name" ,
+            avgExp:{$avg : "$cusAmt"  }    
+          
+      }
+    }, 
+    {
+      $project: {
+        name:1,
+      cusAmt:1,
+      avgExp:1
+      }
+    } , 
+ 
+   ]).then((data) => {
+    res.status(200).json({
+      status: true,
+      msg: "Data get successfully !",
+      data: data,
+    });
+  })
+  .catch((error) => {
+    res
+      .status(500)
+      .json({
+        status: false,
+        msg: "server error ! Please try again !!",
+        error: "server error !Please try again !!",
+      });
+  })
+}
+/////////////////////////////////////////////////////////////////////////////////
 // {$group : { _id:"$name" , customerArr : {$push : "$cusName"} }} ,
 
 //////////////////////////////////////////////// POST
@@ -167,12 +231,13 @@ const productPost = async (req, res) => {
       });
     });
 };
-/////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 
 module.exports = {
   productGetHome,
   productGet,
   joinedDataGet,
   groupProduct ,
+  avgCusExp ,
   productPost,
 };
