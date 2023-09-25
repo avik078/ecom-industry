@@ -4,7 +4,7 @@ var user = require("../../Controller/Auth/user");
 
 
 
-
+router.get("/getone", user.getOnlyOne)
 router.get("/get", user.getFive)
 router.get("/get/pagi", user.getPagi)
 router.post("/entry", user.userPost)

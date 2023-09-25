@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 const Product = require("../../Model/product");
 
+ 
+// const myPlaintextPassword = 's0/\/\P4$$w0rD';
+// const someOtherPlaintextPassword = 'not_bacon';
+
 ///////////////////////////////////////////GET Home
 const productGetHome = (req, res) => {
   res.status(200).json({ data: "Hi This is API Home route" });
@@ -212,7 +216,9 @@ const  avgCusExp = async(req,res) => {
 // {$group : { _id:"$name" , customerArr : {$push : "$cusName"} }} ,
 
 //////////////////////////////////////////////// POST
+//token =  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.IjY1MTE2OGQzODIyYmU0ZTYwYTVhNGRhNSI.MWTVmLHoFGHWmghlAfe0E_N-TRGl-ealY1ZE4cTfP5o"
 const productPost = async (req, res) => {
+
   const newOb = req.body;
   console.log(newOb);
   await Product.create(newOb)

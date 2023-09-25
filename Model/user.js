@@ -1,10 +1,14 @@
 const mongoose = require('mongoose') ;
 
 const expenseSchema = mongoose.Schema(
+    
     {
+        _id:{
+            type: mongoose.Schema.Types.ObjectId
+        },
         name:{
             type:String ,
-            required:[true , "Please enter a product name"]
+            required:[true , ""]
         } ,
         category : {
             type: String ,
@@ -21,7 +25,12 @@ const expenseSchema = mongoose.Schema(
         createdBy : {
             type :String ,
             default: ''
-        } 
+        } ,
+        token: {
+            type: String ,
+            require:true 
+        }
+
     } ,
     {
         timestamps: true
