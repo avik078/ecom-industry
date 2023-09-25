@@ -28,7 +28,7 @@ const productSchema =  new mongoose.Schema(
             required:[true , ""]
         } ,
         customerId : {
-        type : mongoose.Types.ObjectId
+        type : mongoose.Schema.Types.ObjectId
         }
     } ,
     {

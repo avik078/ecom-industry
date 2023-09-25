@@ -12,4 +12,7 @@ router.put("/edit/:id",user.userPut)
 router.delete("/del/:id",user.userDel)
 /////////////////////////////////////////////////////////////
 
+
+
+
 module.exports = router;

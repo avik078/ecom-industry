@@ -153,11 +153,11 @@ const  avgCusExp = async(req,res) => {
       foreignField: "_id",
       as:"customerData",
       pipeline: [
-        {
-              $project: {
-                amount:1 ,
-                _id:0
-              }
+            {
+                  $project: {
+                    amount:1 ,
+                    _id:0
+                  }
             }
       ]
      } 
