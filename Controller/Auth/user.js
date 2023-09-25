@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
+
 const User = require("../../Model/user");
 const jwt_decode = require('jwt-decode');
 const sign = require('jwt-encode');
-const middle_1 = require("../../service/middleware_1")
+
 /////////////////////////////////Token decode
 const  decoder = (token) => {
   const decodedHeader = jwt_decode(token);
@@ -21,13 +22,13 @@ const getOnlyOne = async (req,res) => {
   await User.findOne({_id:"651168d3822be4e60a5a4da5"}).
   then((data)=> res.status(200).send({TokenDecode:decoder(data.token)}))
 }
- 
+
 ////////////////////////////////////////////////// GET
 const getFive = async (req, res) => {
   await User.aggregate([
     {
       $match: {
-        __v: 0,
+      userID: new mongoose.Types.ObjectId("65118c904b347fa0baeb304d")
       },
     },
     {
@@ -58,11 +59,7 @@ const getPagi = async (req, res) => {
   const limit = req.query.limit ? req.query.limit : 5;
 
   await User.aggregate([
-    {
-      $match: {
-        __v: 0,
-      },
-    },
+    
     {
       $project: {
         __v: 0,
@@ -94,12 +91,13 @@ const getPagi = async (req, res) => {
 
 //////////////////////////////////////////////// POST
 const userPost = async (req, res) => {
-  const genID = new mongoose.Types.ObjectId
+  const genID = {
+    _id: new mongoose.Types.ObjectId
+  }
 
   const token = encoder(genID)
-   console.log("token", token)
-   console.log("_fsfd",genID)
-// return false
+  console.log("token", token)
+  console.log("_fsfd",genID)
 
   const newOb = {
     _id: genID,
@@ -147,7 +145,7 @@ const userPut = async (req, res) => {
 const userDel = async (req, res) => {
   const id = req.params.id;
   console.log(id);
-  await User.deleteOne({ _id: id })
+  await User.deleteOne({ _id: new mongoose.Types.ObjectId(id)  })
     .then((data) => {
       res
         .status(200)

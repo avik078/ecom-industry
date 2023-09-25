@@ -27,7 +27,7 @@ const productSchema =  new mongoose.Schema(
             
             required:[true , ""]
         } ,
-        customerId : {
+        userID : {
         type : mongoose.Schema.Types.ObjectId
         }
     } ,

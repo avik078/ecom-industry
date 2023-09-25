@@ -16,6 +16,7 @@ const productGet = async (req, res) => {
     {
       $match: {
         __v: 0,
+        userID: new mongoose.Types.ObjectId("65118d914b347fa0baeb3059")
       },
     },
     {
@@ -218,8 +219,12 @@ const  avgCusExp = async(req,res) => {
 //////////////////////////////////////////////// POST
 //token =  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.IjY1MTE2OGQzODIyYmU0ZTYwYTVhNGRhNSI.MWTVmLHoFGHWmghlAfe0E_N-TRGl-ealY1ZE4cTfP5o"
 const productPost = async (req, res) => {
+   
 
-  const newOb = req.body;
+  let newOb = req.body;
+  const userID = req.userID 
+  
+  newOb = {...newOb,userID:userID}
   console.log(newOb);
   await Product.create(newOb)
     .then((data) => {
