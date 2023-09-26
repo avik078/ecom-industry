@@ -17,9 +17,56 @@ const  encoder = (data) => {
   console.log(jwt)
   return jwt
 }
+
+//////////////////////////////////////////////////// GET number of product per user 
+
+const  getCountPro = async (req,res) => {
+
+  await User.aggregate([
+    {$lookup : {
+      from: "product_1",
+      localField: "_id",
+      foreignField: "userID",
+      as: "productDetails" ,
+      pipeline: [
+
+        {$project : {
+            _id:1 ,
+            name: 1 ,
+            price:1 
+        }} 
+      ]
+    }} ,
+    {$addFields : {countpro: {$size:"$productDetails"}}},
+    {
+      $project : {
+        createdBy:1,
+        productDetails:1,
+        countpro:1
+      }
+      }
+    
+  
+     
+  ]).then((data) =>
+     res
+    .status(200)
+    .json({ status: true, msg: "Data get successfully !", data: data })
+)
+.catch((error) => {
+  console.log(error)
+  res.status(400).json({
+    status: false,
+    msg: "server error ! Please try again !!",
+    data: error,
+  })
+}
+);
+}
 ///////////////////////////////////////////////////GET ONE 
 const getOnlyOne = async (req,res) => {
-  await User.findOne({_id:"651168d3822be4e60a5a4da5"}).
+  // await User.findOne({_id:"651168d3822be4e60a5a4da5"}).
+  await User.findOne({_id: new mongoose.Types.ObjectId("651168d3822be4e60a5a4da5") }).
   then((data)=> res.status(200).send({TokenDecode:decoder(data.token)}))
 }
 
@@ -28,7 +75,8 @@ const getFive = async (req, res) => {
   await User.aggregate([
     {
       $match: {
-      userID: new mongoose.Types.ObjectId("65118c904b347fa0baeb304d")
+        // __v: 0,
+        // userID: new mongoose.Types.ObjectId(req.user._id)
       },
     },
     {
@@ -57,7 +105,6 @@ const getFive = async (req, res) => {
 const getPagi = async (req, res) => {
   const skip = req.query.skip ? req.query.skip : 0;
   const limit = req.query.limit ? req.query.limit : 5;
-
   await User.aggregate([
     
     {
@@ -88,13 +135,13 @@ const getPagi = async (req, res) => {
       });
     });
 };
-
 //////////////////////////////////////////////// POST
 const userPost = async (req, res) => {
+  console.log("This  is new user post collection route")
   const genID = {
     _id: new mongoose.Types.ObjectId
   }
-
+  
   const token = encoder(genID)
   console.log("token", token)
   console.log("_fsfd",genID)
@@ -105,7 +152,7 @@ const userPost = async (req, res) => {
     ...req.body,
   };
   console.log(newOb);
-  await User.create(newOb)
+   await User.create(newOb)
     .then((data) => {
       res.status(200).json({
         status: true,
@@ -160,4 +207,4 @@ const userDel = async (req, res) => {
     });
 };
 
-module.exports = { getOnlyOne,getFive, getPagi, userPost, userPut, userDel };
+module.exports = { getCountPro,getOnlyOne,getFive, getPagi, userPost, userPut, userDel };

@@ -13,8 +13,7 @@ router.get('/', function(req, res, next) {
 
 
 /* GET API page. */
+router.use('/api/cus',custom_route)
 router.use('/api',product_path)
-router.use('/api',custom_route)
 router.use('/api/admin',admin_login_route)
-
 module.exports = router;

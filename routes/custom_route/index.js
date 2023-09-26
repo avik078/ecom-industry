@@ -3,7 +3,7 @@ var router = express.Router();
 var user = require("../../Controller/Auth/user");
 
 
-
+router.get("/countperuser",user.getCountPro)
 router.get("/getone", user.getOnlyOne)
 router.get("/get", user.getFive)
 router.get("/get/pagi", user.getPagi)
