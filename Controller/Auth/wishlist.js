@@ -41,48 +41,61 @@ const getExcluded = async (req, res) => {
 const addWish = async (req, res) => {
   const { wishProId } = req.body;
   const userID = req.userID;
-  console.log(userID);
-  await Wishlist.aggregate([{ $match: { _id: userID, wishProId: wishProId } }])
+  console.log("This is from  header", userID);
+  await Wishlist.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(userID),
+        wishProId: new mongoose.Types.ObjectId(wishProId),
+      },
+    },
+  ])
     .then(async (data) => {
       console.log(data.length);
 
       if (data.length == 0) {
         await Wishlist.create({
           _id: new mongoose.Types.ObjectId(userID),
-          wishProId: wishProId,
+          wishProId: new mongoose.Types.ObjectId(wishProId),
         })
           .then((data) => {
-            res
-              .status(200)
-              .json({
-                status: true,
-                msg: "Data get successfully !",
-                data: data,
-              });
+            res.status(200).json({
+              status: true,
+              msg: "Removed from wish list!",
+              data: data,
+            });
           })
           .catch((error) => {
-            res
-              .status(400)
-              .json({
-                status: true,
-                msg: "server error ! Please try again !!",
-                data: error,
-              });
+            res.status(400).json({
+              status: true,
+              msg: "server error ! Please try again !!",
+              data: error,
+            });
           });
-   
-           
-         
-        res
-          .status(200)
-          .json({
-            status: true,
-            msg: "Not already  exists in wishlist",
-            data: data,
+
+        
+      } else {
+        await Wishlist.deleteOne({
+          _id: new mongoose.Types.ObjectId(userID),
+          wishProId: new mongoose.Types.ObjectId(wishProId),
+        })
+          .then((data) => {
+            res.status(200).json({
+              status: true,
+              msg: "Removed from wish list!",
+              data: data,
+            });
+          })
+          .catch((error) => {
+            res.status(400).json({
+              status: true,
+              msg: "server error ! Please try again !!",
+              data: error,
+            });
           });
+
+        
       }
-      res
-        .status(200)
-        .json({ status: true, msg: "Data get successfully !", data: data });
     })
     .catch((error) => {
       console.log(error);
